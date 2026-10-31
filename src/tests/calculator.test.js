@@ -1,4 +1,13 @@
-const { add, subtract, multiply, divide, calculate } = require("../calculator");
+const {
+  add,
+  subtract,
+  multiply,
+  divide,
+  modulo,
+  power,
+  squareRoot,
+  calculate,
+} = require("../calculator");
 
 describe("addition", () => {
   test("adds the example operands", () => {
@@ -48,21 +57,71 @@ describe("division", () => {
   });
 });
 
+describe("modulo", () => {
+  test("returns the remainder", () => {
+    expect(modulo(5, 2)).toBe(1);
+  });
+
+  test("throws when the divisor is zero", () => {
+    expect(() => modulo(10, 0)).toThrow("Cannot calculate modulo by zero.");
+  });
+});
+
+describe("power", () => {
+  test("raises the base to the exponent", () => {
+    expect(power(2, 3)).toBe(8);
+  });
+
+  test("supports zero and negative exponents", () => {
+    expect(power(5, 0)).toBe(1);
+    expect(power(2, -2)).toBe(0.25);
+  });
+});
+
+describe("square root", () => {
+  test("returns the square root", () => {
+    expect(squareRoot(16)).toBe(4);
+  });
+
+  test("supports zero", () => {
+    expect(squareRoot(0)).toBe(0);
+  });
+
+  test("throws for negative numbers", () => {
+    expect(() => squareRoot(-1)).toThrow(
+      "Cannot calculate the square root of a negative number.",
+    );
+  });
+});
+
 describe("calculate", () => {
   test.each([
     [2, "+", 3, 5],
     [10, "-", 4, 6],
     [45, "*", 2, 90],
     [20, "/", 5, 4],
+    [5, "%", 2, 1],
+    [2, "**", 3, 8],
+    [16, "sqrt", undefined, 4],
   ])("calculates %p %p %p", (left, operator, right, expected) => {
     expect(calculate(left, operator, right)).toBe(expected);
   });
 
   test("rejects unsupported operators", () => {
-    expect(() => calculate(2, "%", 3)).toThrow("Unsupported operation: %");
+    expect(() => calculate(2, "mod", 3)).toThrow("Unsupported operation: mod");
   });
 
   test("propagates division-by-zero errors", () => {
     expect(() => calculate(20, "/", 0)).toThrow("Cannot divide by zero.");
+  });
+
+  test("propagates modulo-by-zero errors", () => {
+    expect(() => calculate(20, "%", 0)).toThrow("Cannot calculate modulo by zero.");
+  });
+
+  test("propagates negative square-root errors", () => {
+    expect(() => calculate(-1, "sqrt")).toThrow(
+      "Cannot calculate the square root of a negative number.",
+    );
   });
 });
